@@ -1,6 +1,10 @@
 //board
-function board() {
-  let board = [1,2,3,4,5,6,7,8,9];
+let board = [1,2,3,4,5,6,7,8,9];
+let moveCount = 0;
+let player1;
+let player2;
+
+
 
 function renderBoard() {
   return board.map((cell, index) => 
@@ -8,15 +12,21 @@ function renderBoard() {
   ).join('');
 }
   function isMoveValid(position, marker) {
-    if (position >= 0 && position <= 9 && (marker === 'X' || marker === 'O')) //made a mistake earlier i made position > 0 && position <= 8; because of i thought of index
-                                                                              //where as i shouldve taken into consideration my game design where players choose a square
-                                                                              //  instead. therefore it doesnt need an index
-      return true
-    else
-      alert: "Invalid move!";
+    if (position < 1 || position > 9) {
+      return false;
+    }
+
+    if (marker !== 'X' && marker !== 'O') {
+      return false;
+    }
+
+    if(typeof board[position -1] === 'string') {
+      return false;
+    }
+    return true;
   }
 
-  function updateBoard(position) {
+  function updateBoard(position, marker) { //lets see if this is better
     board[position -1] = marker;
     }
   
@@ -28,17 +38,27 @@ function renderBoard() {
       return false
     
   }
-}
+
   
 
 //game
 
 
   function startGame() {
-    
+
+    const { player1, player2 } = playerInfo();
+    moveCount = 0;
+    board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    displayBoard();
+
+    promptPlayer();
+   
   }
 
   function getMove(position, currentPlayer) {
+    const currentPlayer = playerTurn();
+    
     if (!isMoveValid(position, currentPlayer.marker)) {
       alert("Invalid move! Try again.");
       return false;
@@ -67,7 +87,7 @@ function renderBoard() {
   }
 
     function playerTurn() {
-      if (MoveCount % 2 !== 0){
+      if (moveCount % 2 === 0) {
         return player1
       }
       else {
@@ -92,7 +112,7 @@ function renderBoard() {
       ];
       
       for (let i = 0; i < lines.length; i++){
-        
+
         const[a, b, c] = lines[i];
 
         if (board[a] && board[a] === board[b] && board[a] === board[c]){
@@ -127,13 +147,54 @@ function renderBoard() {
   return { player1, player2 };
 }
 
+function resetGame() {
+  board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  moveCount = 0;
+  displayBoard();
+}
+
+//function cellClickHandler(event) {
+//  const position = parseInt(event.target.dataset.index) + 1;
+//  const currentPlayer = playerTurn();
+  
+//  if (getMove(position, currentPlayer)) {
+//    displayBoard();
+//    if (checkWinner(board)) {
+//      alert(`${currentPlayer.name} wins!`);
+ //     resetGame();
+ //     return;
+//    }
+//  }
+//}
+
 //display
 
-function displayController() {
-
   function displayBoard() {
-
+    document.getElementById('board').innerHTML = renderBoard();
   }
-}
+
+
+document.getElementById('board').addEventListener('click', (event) => {
+  if (event.target.tagName === 'BUTTON') {
+    const position = parseInt(event.target.dataset.index) + 1;
+    const currentPlayer = playerTurn();
+
+    if (getMove(position, currentPlayer)) {
+      displayBoard();
+      if (checkWinner(board)) {
+        alert(`${currentPlayer.name} wins!`);
+        resetGame();
+        return;
+      }
+      if (isFull()) {
+        resetGame();
+        return;
+      }
+      promptPlayer();
+    }
+  }
+});
+
+startGame();
 
 
