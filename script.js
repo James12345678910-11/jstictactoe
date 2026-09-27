@@ -46,7 +46,9 @@ function renderBoard() {
 
   function startGame() {
 
-    const { player1, player2 } = playerInfo();
+    const result = playerInfo();
+    player1 = result.player1;
+    player2 = result.player2;
     moveCount = 0;
     board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -57,11 +59,12 @@ function renderBoard() {
   }
 
   function getMove(position, currentPlayer) {
-    const currentPlayer = playerTurn();
+    
     
     if (!isMoveValid(position, currentPlayer.marker)) {
       alert("Invalid move! Try again.");
-      return false;
+      return false;  
+      
   }
       updateBoard(position, currentPlayer.marker);
       increaseMoveCount();
@@ -95,7 +98,7 @@ function renderBoard() {
            }
   }
 
-    function winningMoves() {
+    function winningMoves(board) {
 
       
 
@@ -128,21 +131,19 @@ function renderBoard() {
 
  
   function playerInfo() { // i should change this to handle only the names
-   const player1 = {
-    name: prompt("Enter Player 1's name:"),
-    marker: prompt("Choose Player 1's marker (X or O):").toUpperCase()
-  };
-  let player2Marker;
-    if (player1.marker === "X") {
-    player2Marker = "O";
-  } else {
-    player2Marker = "X";
-  }
+   const name1 = prompt("Enter Player 1's name:");
+    let marker1;
 
-   const player2 = {
-    name: prompt("Enter Player 2's name:"),
-    marker: player2Marker
-  };
+      do {
+        marker1 = prompt("Choose Player 1's marker (X or O):").toUpperCase();
+         }  
+   while (marker1 !== 'X' && marker1 !== 'O');  // ✅ keep asking until valid
+
+      const player1 = { name: name1, marker: marker1 };
+      const player2 = {
+        name: prompt("Enter Player 2's name:"),
+        marker: marker1 === 'X' ? 'O' : 'X'
+      };
 
   return { player1, player2 };
 }
@@ -151,6 +152,7 @@ function resetGame() {
   board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   moveCount = 0;
   displayBoard();
+  promptPlayer();
 }
 
 //function cellClickHandler(event) {
